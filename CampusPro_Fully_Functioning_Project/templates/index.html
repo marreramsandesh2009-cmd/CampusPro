@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}CampusPro | Project Management{% endblock %}
+
+{% block content %}
+
+<section class="hero rounded-4 p-4 p-lg-5">
+    <div class="row align-items-center g-4">
+
+        <div class="col-lg-7">
+            <span class="eyebrow">
+                FINAL-YEAR PROJECT MANAGEMENT
+            </span>
+
+            <h1 class="display-4 fw-bold mt-3">
+                Your project journey,
+                <span class="highlight">all in one place.</span>
+            </h1>
+
+            <p class="lead mt-3">
+                CampusPro brings students, faculty, and administrators
+                together to manage final-year projects, track submissions,
+                review progress, and organize project information.
+            </p>
+
+            <div class="d-flex flex-wrap gap-2 mt-4">
+                {% if not session.get('user_id') %}
+                <a class="btn btn-primary btn-lg" href="{{ url_for('register') }}">
+                    Sign Up
+                </a>
+                <a class="btn btn-outline-dark btn-lg" href="{{ url_for('login') }}">
+                    Login
+                </a>
+                {% else %}
+                <a class="btn btn-primary btn-lg" href="{{ url_for('dashboard') }}">
+                    Go to Dashboard
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="hero-card">
+                <div class="hero-icon">🎓</div>
+
+                <h3>One workspace. Clear progress.</h3>
+
+                <p class="text-secondary">
+                    Keep project submissions organized, review progress,
+                    and follow each project's status from submission
+                    to approval.
+                </p>
+
+                <div class="progress mt-4"
+                     role="progressbar"
+                     aria-label="Project workflow illustration"
+                     aria-valuemin="0"
+                     aria-valuemax="100"
+                     aria-valuenow="75">
+
+                    <div class="progress-bar" style="width: 75%"></div>
+                </div>
+
+                <div class="d-flex justify-content-between small mt-2">
+                    <span>Submit</span>
+                    <span>Review</span>
+                    <span>Approve</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<section class="row g-3 mt-3">
+
+    <div class="col-md-4">
+        <div class="feature-card h-100">
+            <div class="feature-icon">📁</div>
+
+            <h4>Student Workspace</h4>
+
+            <p>
+                Register an account, submit final-year project details,
+                provide project links and screenshots, and track review status.
+            </p>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="feature-card h-100">
+            <div class="feature-icon">🔍</div>
+
+            <h4>Faculty Workspace</h4>
+
+            <p>
+                Review student project submissions, inspect project files,
+                and update status to Submitted, Under Review, Approved,
+                or Needs Changes.
+            </p>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="feature-card h-100">
+            <div class="feature-icon">⚙️</div>
+
+            <h4>Admin Workspace</h4>
+
+            <p>
+                Monitor users and project submissions, create faculty
+                accounts, and manage student and faculty roles.
+            </p>
+        </div>
+    </div>
+
+</section>
+
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Login | CampusPro{% endblock %}
+
+{% block content %}
+    
+<div class="auth-wrap">
+    <div class="auth-card">
+
+        <div class="text-center mb-4">
+            <div class="feature-icon mx-auto">🔐</div>
+            <h2 class="fw-bold">Welcome Back</h2>
+            <p class="text-secondary">
+                Sign in to continue to CampusPro.
+            </p>
+        </div>
+
+        <form method="post">
+
+            <div class="mb-3">
+                <label class="form-label" for="role">
+                    Login As
+                </label>
+
+                <select
+                    class="form-select form-select-lg"
+                    id="role"
+                    name="role"
+                    required>
+
+                    <option value="admin">Admin</option>
+                    <option value="faculty">Faculty</option>
+                    <option value="student" selected>Student</option>
+
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="email">
+                    Email Address
+                </label>
+
+                <input
+                    class="form-control form-control-lg"
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="Enter your email address"
+                    autocomplete="username"
+                    required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="password">
+                    Password
+                </label>
+
+                <input
+                    class="form-control form-control-lg"
+                    id="password"
+                    name="password"
+                    type="password"
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+                    required>
+            </div>
+
+            <button
+                class="btn btn-primary btn-lg w-100"
+                type="submit">
+                Sign In
+            </button>
+
+        </form>
+
+        <p class="text-center mt-4 mb-0">
+            New to CampusPro?
+            <a href="{{ url_for('register') }}">Sign Up</a>
+        </p>
+
+    </div>
+</div>
+
+{% endblock %}

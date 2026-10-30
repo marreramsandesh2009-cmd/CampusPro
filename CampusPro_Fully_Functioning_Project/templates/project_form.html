@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+
+{% block title %}Submit Project | CampusPro{% endblock %}
+
+{% block content %}
+
+<div class="auth-wrap wide">
+    <div class="auth-card">
+
+        <span class="eyebrow">STUDENT WORKSPACE</span>
+
+        <h2 class="fw-bold mt-2">Submit a Project</h2>
+
+        <p class="text-secondary">
+            Add your project details, repository link, and screenshots.
+        </p>
+
+        <form method="post"
+              enctype="multipart/form-data"
+              id="projectForm">
+
+            <div class="mb-3">
+                <label class="form-label" for="title">
+                    Project Title *
+                </label>
+                <input
+                    class="form-control"
+                    id="title"
+                    name="title"
+                    type="text"
+                    maxlength="200"
+                    placeholder="Enter your project title"
+                    required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="abstract">
+                    Abstract / Description *
+                </label>
+                <textarea
+                    class="form-control"
+                    id="abstract"
+                    name="abstract"
+                    rows="5"
+                    maxlength="5000"
+                    placeholder="Explain your project, purpose, and features"
+                    required></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="tech_stack">
+                    Technology Stack
+                </label>
+                <input
+                    class="form-control"
+                    id="tech_stack"
+                    name="tech_stack"
+                    type="text"
+                    maxlength="255"
+                    placeholder="HTML, CSS, JavaScript, Flask, MySQL">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="project_link">
+                    Project Link
+                </label>
+                <input
+                    type="url"
+                    class="form-control"
+                    id="project_link"
+                    name="project_link"
+                    maxlength="2048"
+                    placeholder="https://github.com/username/project"
+                    aria-describedby="projectLinkHelp">
+
+                <div class="form-text" id="projectLinkHelp">
+                    Enter your GitHub repository or deployed website URL.
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="project_images">
+                    Project Images
+                </label>
+                <input
+                    type="file"
+                    class="form-control"
+                    id="project_images"
+                    name="project_images"
+                    accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                    multiple
+                    aria-describedby="imageHelp">
+
+                <div class="form-text" id="imageHelp">
+                    Select up to 5 JPG, PNG, or WebP images.
+                    Maximum 3 MB per image.
+                </div>
+            </div>
+
+            <div id="imagePreview"
+                 class="row g-3 mb-3"
+                 aria-live="polite"></div>
+
+            <div class="d-flex flex-wrap gap-2">
+                <button class="btn btn-primary" type="submit">
+                    Submit Project
+                </button>
+
+                <a class="btn btn-outline-secondary"
+                   href="{{ url_for('student_dashboard') }}">
+                    Cancel
+                </a>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const input = document.getElementById("project_images");
+    const preview = document.getElementById("imagePreview");
+    const form = document.getElementById("projectForm");
+
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+    const maxFiles = 5;
+    const maxSize = 3 * 1024 * 1024;
+    const previewUrls = [];
+
+    function clearPreview() {
+        previewUrls.forEach(url => URL.revokeObjectURL(url));
+        previewUrls.length = 0;
+        preview.replaceChildren();
+    }
+
+    function validateImages(files) {
+        return files.length <= maxFiles &&
+            files.every(file =>
+                allowedTypes.includes(file.type) &&
+                file.size > 0 &&
+                file.size <= maxSize
+            );
+    }
+
+    input.addEventListener("change", () => {
+        clearPreview();
+
+        const files = Array.from(input.files);
+
+        if (!validateImages(files)) {
+            alert(
+                "Choose up to 5 JPG, PNG, or WebP images, " +
+                "each no larger than 3 MB."
+            );
+
+            input.value = "";
+            return;
+        }
+
+        files.forEach(file => {
+            const column = document.createElement("div");
+            column.className = "col-6 col-md-4";
+
+            const image = document.createElement("img");
+            image.className = "img-fluid rounded border";
+            image.style.width = "100%";
+            image.style.height = "140px";
+            image.style.objectFit = "cover";
+            image.alt = "Selected project screenshot";
+
+            const url = URL.createObjectURL(file);
+            previewUrls.push(url);
+            image.src = url;
+
+            column.appendChild(image);
+            preview.appendChild(column);
+        });
+    });
+
+    form.addEventListener("submit", event => {
+        const files = Array.from(input.files);
+
+        if (!validateImages(files)) {
+            event.preventDefault();
+
+            alert(
+                "Please select valid images: up to 5 files, " +
+                "JPG, PNG, or WebP, maximum 3 MB each."
+            );
+        }
+    });
+
+    window.addEventListener("pagehide", clearPreview);
+});
+</script>
+
+{% endblock %}

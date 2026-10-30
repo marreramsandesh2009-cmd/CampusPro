@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}Create Account | CampusPro{% endblock %}
+
+{% block content %}
+
+<div class="auth-wrap">
+    <div class="auth-card">
+
+        <div class="text-center mb-4">
+            <div class="feature-icon mx-auto">👋</div>
+
+            <span class="eyebrow">STUDENT REGISTRATION</span>
+
+            <h2 class="fw-bold mt-2">Create your account</h2>
+
+            <p class="text-secondary">
+                Join CampusPro to submit and manage your final-year projects.
+            </p>
+        </div>
+
+        <form method="post" id="registerForm">
+
+            <div class="mb-3">
+                <label class="form-label" for="name">
+                    Full Name *
+                </label>
+
+                <input
+                    class="form-control"
+                    id="name"
+                    name="name"
+                    type="text"
+                    maxlength="100"
+                    autocomplete="name"
+                    placeholder="Enter your full name"
+                    required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="email">
+                    Email Address *
+                </label>
+
+                <input
+                    class="form-control"
+                    id="email"
+                    name="email"
+                    type="email"
+                    maxlength="190"
+                    autocomplete="email"
+                    placeholder="Enter your email address"
+                    required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="department">
+                    Department *
+                </label>
+
+                <select
+                    class="form-select"
+                    id="department"
+                    name="department"
+                    required>
+
+                    <option value="">Choose department</option>
+                    <option value="CSE">CSE</option>
+                    <option value="IT">IT</option>
+                    <option value="ECE">ECE</option>
+                    <option value="EEE">EEE</option>
+                    <option value="Mechanical">Mechanical</option>
+                    <option value="Civil">Civil</option>
+                    <option value="Other">Other</option>
+
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="password">
+                    Password *
+                </label>
+
+                <input
+                    class="form-control"
+                    id="password"
+                    name="password"
+                    type="password"
+                    minlength="8"
+                    autocomplete="new-password"
+                    placeholder="Create a password"
+                    aria-describedby="passwordHelp"
+                    required>
+
+                <div class="form-text" id="passwordHelp">
+                    Use at least 8 characters.
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label" for="confirm_password">
+                    Confirm Password *
+                </label>
+
+                <input
+                    class="form-control"
+                    id="confirm_password"
+                    name="confirm_password"
+                    type="password"
+                    minlength="8"
+                    autocomplete="new-password"
+                    placeholder="Enter your password again"
+                    required>
+            </div>
+
+            <button
+                class="btn btn-primary btn-lg w-100"
+                type="submit">
+                Create Account
+            </button>
+
+        </form>
+
+        <p class="text-center mt-4 mb-0">
+            Already registered?
+            <a href="{{ url_for('login') }}">Sign in</a>
+        </p>
+
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("registerForm");
+    const password = document.getElementById("password");
+    const confirmPassword = document.getElementById("confirm_password");
+
+    function validatePasswords() {
+        if (confirmPassword.value === "") {
+            confirmPassword.setCustomValidity("");
+            return;
+        }
+
+        if (password.value !== confirmPassword.value) {
+            confirmPassword.setCustomValidity("Passwords do not match.");
+        } else {
+            confirmPassword.setCustomValidity("");
+        }
+    }
+
+    password.addEventListener("input", validatePasswords);
+    confirmPassword.addEventListener("input", validatePasswords);
+
+    form.addEventListener("submit", event => {
+        validatePasswords();
+
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            form.reportValidity();
+        }
+    });
+});
+</script>
+
+{% endblock %}

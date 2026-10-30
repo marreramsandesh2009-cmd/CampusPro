@@ -1,0 +1,281 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard | CampusPro{% endblock %}
+
+{% block content %}
+
+<div class="page-heading">
+    <span class="eyebrow">ADMINISTRATION</span>
+    <h1 class="fw-bold mt-2">Admin Dashboard</h1>
+    <p class="text-secondary">
+        Manage users, create faculty accounts, and monitor project submissions.
+    </p>
+</div>
+
+<div class="row g-3 mt-2">
+    {% for label, value in [
+        ('Total Users', stats.users),
+        ('Students', stats.students),
+        ('Faculty', stats.faculty),
+        ('Projects', stats.projects)
+    ] %}
+    <div class="col-6 col-lg-3">
+        <div class="stat-card">
+            <span>{{ label }}</span>
+            <strong>{{ value }}</strong>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Create Faculty Account -->
+<div class="section-card mt-4">
+    <h4 class="mb-1">Create Faculty Account</h4>
+    <p class="text-secondary mb-4">
+        Register a faculty member to access the faculty dashboard.
+    </p>
+
+    <form method="post"
+          action="{{ url_for('create_faculty') }}"
+          class="row g-3">
+
+        <div class="col-md-6">
+            <label for="faculty_name" class="form-label">
+                Full Name
+            </label>
+            <input
+                type="text"
+                class="form-control"
+                id="faculty_name"
+                name="name"
+                placeholder="Enter faculty name"
+                maxlength="100"
+                autocomplete="name"
+                required>
+        </div>
+
+        <div class="col-md-6">
+            <label for="faculty_email" class="form-label">
+                Email Address
+            </label>
+            <input
+                type="email"
+                class="form-control"
+                id="faculty_email"
+                name="email"
+                placeholder="Enter faculty email"
+                maxlength="254"
+                autocomplete="email"
+                required>
+        </div>
+
+        <div class="col-md-6">
+            <label for="faculty_department" class="form-label">
+                Department
+            </label>
+
+            <select
+                class="form-select"
+                id="faculty_department"
+                name="department"
+                required>
+
+                <option value="">Choose department</option>
+                <option value="CSE">CSE</option>
+                <option value="IT">IT</option>
+                <option value="ECE">ECE</option>
+                <option value="EEE">EEE</option>
+                <option value="Mechanical">Mechanical</option>
+                <option value="Civil">Civil</option>
+                <option value="Other">Other</option>
+
+            </select>
+        </div>
+
+        <div class="col-md-6">
+            <label for="faculty_password" class="form-label">
+                Initial Password
+            </label>
+            <input
+                type="password"
+                class="form-control"
+                id="faculty_password"
+                name="password"
+                placeholder="Create an initial password"
+                minlength="8"
+                autocomplete="new-password"
+                required>
+        </div>
+
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">
+                Create Faculty Account
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- User Management -->
+<div class="section-card mt-4">
+    <h4 class="mb-3">User Management</h4>
+
+    {% if users %}
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Department</th>
+                    <th>Role</th>
+                    <th>Change Role</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for u in users %}
+                <tr>
+                    <td>{{ u.name }}</td>
+                    <td>{{ u.email }}</td>
+                    <td>{{ u.department or '—' }}</td>
+
+                    <td>
+                        <span class="badge role-badge">
+                            {{ u.role|title }}
+                        </span>
+                    </td>
+
+                    <td>
+                        {% if u.role != 'admin' %}
+                        <form
+                            method="post"
+                            action="{{ url_for('change_user_role', user_id=u.id) }}"
+                            class="d-flex gap-2 align-items-center">
+
+                            <select
+                                class="form-select form-select-sm"
+                                name="role"
+                                aria-label="Select user role">
+
+                                <option value="student"
+                                    {% if u.role == 'student' %}selected{% endif %}>
+                                    Student
+                                </option>
+
+                                <option value="faculty"
+                                    {% if u.role == 'faculty' %}selected{% endif %}>
+                                    Faculty
+                                </option>
+                            </select>
+
+                            <button type="submit"
+                                    class="btn btn-sm btn-outline-primary">
+                                Update
+                            </button>
+                        </form>
+                        {% else %}
+                        <span class="small text-secondary">
+                            Protected
+                        </span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="text-secondary">No users found.</p>
+    {% endif %}
+</div>
+
+<!-- All Projects -->
+<div class="section-card mt-4">
+    <h4 class="mb-3">All Projects</h4>
+
+    {% if projects %}
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Project</th>
+                    <th>Student</th>
+                    <th>Technology</th>
+                    <th>Project Files</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for p in projects %}
+                <tr>
+                    <td>
+                        <strong>{{ p.title }}</strong>
+                        <div class="small text-secondary project-abstract">
+                            {{ p.abstract or 'No abstract provided.' }}
+                        </div>
+                    </td>
+
+                    <td>
+                        {{ p.student_name }}
+                        <div class="small text-secondary">
+                            {{ p.student_email }}
+                        </div>
+                    </td>
+
+                    <td>{{ p.tech_stack or '—' }}</td>
+
+                    <td>
+                        {% if p.project_link %}
+                        <a href="{{ p.project_link }}"
+                           target="_blank"
+                           rel="noopener noreferrer">
+                            Open Project ↗
+                        </a>
+                        {% endif %}
+
+                        {% if p.images %}
+                        <div class="d-flex flex-wrap gap-2 mt-2">
+                            {% for image in p.images %}
+                            <a
+                                href="{{ url_for('static', filename=image) }}"
+                                target="_blank"
+                                rel="noopener noreferrer">
+
+                                <img
+                                    src="{{ url_for('static', filename=image) }}"
+                                    alt="Project screenshot"
+                                    loading="lazy"
+                                    class="rounded border"
+                                    width="64"
+                                    height="54"
+                                    style="object-fit: cover;">
+                            </a>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        {% if not p.project_link and not p.images %}
+                        <span class="text-secondary">—</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <span class="badge status-badge">
+                            {{ p.status }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <h5>No project submissions yet</h5>
+        <p>Student project submissions will appear here.</p>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

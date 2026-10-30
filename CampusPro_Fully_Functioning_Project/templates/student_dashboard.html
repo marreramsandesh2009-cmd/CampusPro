@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block title %}Student Dashboard | CampusPro{% endblock %}
+
+{% block content %}
+
+<div class="page-heading d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+    <div>
+        <span class="eyebrow">STUDENT WORKSPACE</span>
+
+        <h1 class="fw-bold mt-2">
+            Hello, {{ session.get('name', 'Student') }} 👋
+        </h1>
+
+        <p class="text-secondary mb-0">
+            Manage your final-year projects and track their progress.
+        </p>
+    </div>
+
+    <a href="{{ url_for('project_form') }}" class="btn btn-primary">
+        ＋ Submit a Project
+    </a>
+</div>
+
+<div class="row g-3 mt-3">
+
+    <div class="col-12 col-md-4">
+        <div class="stat-card h-100">
+            <span>Total Projects</span>
+            <strong>{{ projects|length }}</strong>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+        <div class="stat-card h-100">
+            <span>Approved Projects</span>
+            <strong>
+                {{ projects|selectattr('status', 'equalto', 'Approved')|list|length }}
+            </strong>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+        <div class="stat-card h-100">
+            <span>Pending Review</span>
+            <strong>
+                {{ projects|selectattr('status', 'in', ['Submitted', 'Under Review'])|list|length }}
+            </strong>
+        </div>
+    </div>
+
+</div>
+
+<div class="section-card mt-4">
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+        <div>
+            <h4 class="mb-1 fw-bold">My Projects</h4>
+            <p class="text-secondary small mb-0">
+                View your submissions, project links, images, and review status.
+            </p>
+        </div>
+
+        <span class="badge text-bg-light">
+            {{ projects|length }} total
+        </span>
+    </div>
+
+    {% if projects %}
+
+        <div class="row g-4">
+
+            {% for p in projects %}
+
+                <div class="col-12 col-lg-6">
+
+                    <div class="card h-100 shadow-sm">
+
+                        <div class="card-body d-flex flex-column">
+
+                            <h5 class="fw-bold">
+                                {{ p.title }}
+                            </h5>
+
+                            <p class="text-secondary project-abstract">
+                                {{ p.abstract }}
+                            </p>
+
+                            <p class="mb-2">
+                                <strong>Technology:</strong>
+                                {{ p.tech_stack or 'Not specified' }}
+                            </p>
+
+                            <p class="mb-2">
+                                <strong>Status:</strong>
+
+                                {% if p.status == 'Approved' %}
+                                    <span class="badge text-bg-success">
+                                        Approved
+                                    </span>
+                                {% elif p.status == 'Under Review' %}
+                                    <span class="badge text-bg-info">
+                                        Under Review
+                                    </span>
+                                {% elif p.status == 'Needs Changes' %}
+                                    <span class="badge text-bg-warning">
+                                        Needs Changes
+                                    </span>
+                                {% else %}
+                                    <span class="badge text-bg-secondary">
+                                        {{ p.status or 'Submitted' }}
+                                    </span>
+                                {% endif %}
+                            </p>
+
+                            <p class="small text-secondary mb-3">
+                                <strong>Submitted:</strong>
+                                {{ p.created_at.strftime('%d %b %Y') if p.created_at else '—' }}
+                            </p>
+
+                            {% if p.project_link %}
+                                <div class="mb-3">
+                                    <a
+                                        class="btn btn-sm btn-outline-primary"
+                                        href="{{ p.project_link }}"
+                                        target="_blank"
+                                        rel="noopener noreferrer">
+                                        🔗 Open Project Link
+                                    </a>
+                                </div>
+                            {% endif %}
+
+                            {% if p.images %}
+                                <div class="mt-2 mb-3">
+                                    <h6 class="fw-bold mb-3">
+                                        Project Images
+                                    </h6>
+
+                                    <div class="row g-2">
+
+                                        {% for image in p.images %}
+
+                                            <div class="col-4">
+                                                <a
+                                                    href="{{ url_for('static', filename=image) }}"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    aria-label="Open project screenshot">
+
+                                                    <img
+                                                        src="{{ url_for('static', filename=image) }}"
+                                                        alt="Screenshot for {{ p.title }}"
+                                                        loading="lazy"
+                                                        class="img-fluid rounded border"
+                                                        style="width: 100%; height: 110px; object-fit: cover;">
+                                                </a>
+                                            </div>
+
+                                        {% endfor %}
+
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            <div class="mt-auto pt-2">
+                                {% if p.status == 'Needs Changes' %}
+                                    <p class="small text-warning-emphasis mb-0">
+                                        Please check with your faculty guide for the required changes.
+                                    </p>
+                                {% elif p.status == 'Approved' %}
+                                    <p class="small text-success mb-0">
+                                        Your project has been approved.
+                                    </p>
+                                {% else %}
+                                    <p class="small text-secondary mb-0">
+                                        Track your project here for status updates.
+                                    </p>
+                                {% endif %}
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state text-center">
+
+            <div class="feature-icon mx-auto">📂</div>
+
+            <h5 class="fw-bold mt-3">
+                No Projects Yet
+            </h5>
+
+            <p class="text-secondary">
+                Submit your final-year project with its repository link and screenshots.
+            </p>
+
+            <a
+                class="btn btn-primary"
+                href="{{ url_for('project_form') }}">
+                Submit Your First Project
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
